@@ -1,0 +1,140 @@
+erDiagram
+    %% Lookup Tables
+    OWNER {
+        int OwnerId PK
+        varchar OwnerName "e.g. Sam, Barbara, Joint"
+    }
+    
+    INSTITUTION {
+        int InstitutionId PK
+        varchar InstitutionName "e.g. First Direct, Marcus, ii, External"
+    }
+    
+    ACCOUNT_TYPE {
+        int AccountTypeId PK
+        varchar TypeName "e.g. SIPP, ISA, Trading, External"
+    }
+    
+    TRANSACTION_TYPE {
+        int TransactionTypeId PK
+        varchar TypeName "e.g. Buy, Sell, Dividend, Fee, Transfer"
+    }
+    
+    BUCKET {
+        int BucketId PK
+        varchar BucketName "Growth_Funds, Bond_Ladder, Cash_Reserve"
+        varchar Description "Investment strategy allocation"
+    }
+    
+    CURRENCIES {
+        int CurrencyId PK
+        varchar CurrencyCode "GBP, GBp, USD, EUR"
+        varchar CurrencyName "Pounds Sterling, Pence, US Dollar"
+        decimal ConversionToGBP "For GBp: 0.01, others vary"
+    }
+    
+    %% Core Entity Tables
+    ACCOUNTS {
+        int AccountId PK
+        int OwnerId FK
+        int InstitutionId FK
+        int AccountTypeId FK
+        varchar AccountNumber "NULL for external accounts"
+        varchar AccountName "e.g. Property_Sale, Bequest_Source"
+    }
+    
+    SECURITIES {
+        int SecurityId PK
+        varchar Name "e.g. Vanguard S&P 500, UK 10yr Gilt"
+        varchar Ticker "e.g. VUSA.L, 4.25%2032.L"
+        varchar AssetClass "equity_fund, government_bond, money_market"
+        int CurrencyId FK "Primary trading currency"
+        date MaturityDate "NULL for funds, required for bonds"
+        decimal CouponRate "NULL for funds, annual % for bonds"
+        int CouponFrequency "NULL for funds, payments per year"
+        date LastCouponDate "NULL for funds"
+        date NextCouponDate "NULL for funds"
+    }
+    
+    SECURITY_PRICES {
+        int PriceId PK
+        int SecurityId FK
+        date PriceDate "Trading date"
+        decimal OpenPrice "Opening price"
+        decimal HighPrice "Daily high"
+        decimal LowPrice "Daily low"
+        decimal ClosePrice "Closing price - primary field"
+        bigint Volume "Trading volume"
+        datetime LastUpdated "When data was fetched"
+    }
+    
+    TRANSACTIONS {
+        int TransactionId PK
+        int TransactionTypeId FK
+        int OwnerId FK
+        int InstitutionId FK
+        int AccountId FK
+        int BucketId FK
+        int CurrencyId FK "Transaction currency"
+        decimal ExchangeRate "Rate used by broker at transaction time"
+        datetime TransactionDate
+        text Description "Free text description"
+    }
+    
+    %% Transaction Detail Tables
+    TRADES {
+        int TradeId PK
+        int TransactionId FK
+        int SecurityId FK
+        decimal Units "Shares, bonds, or fund units"
+        decimal Price "Price per unit in transaction currency"
+        decimal TradingFee "Brokerage fees in transaction currency"
+        bool IsBuy "True for buy, False for sell"
+    }
+    
+    INCOME {
+        int IncomeId PK
+        int TransactionId FK
+        int SecurityId FK "NULLABLE - for interest from cash"
+        decimal Amount "Dividend, coupon, or interest in transaction currency"
+    }
+    
+    FEES {
+        int FeeId PK
+        int TransactionId FK
+        decimal Amount "Platform fees, custody fees in transaction currency"
+    }
+    
+    TRANSFERS {
+        int TransferId PK
+        int TransactionId FK
+        int FromAccountId FK "Source account - required"
+        int ToAccountId FK "Destination account - required"
+        decimal Amount "Transfer amount in transaction currency"
+    }
+    
+    %% Relationships
+    OWNER ||--o{ ACCOUNTS : "owns"
+    INSTITUTION ||--o{ ACCOUNTS : "hosts"
+    ACCOUNT_TYPE ||--o{ ACCOUNTS : "categorizes"
+    
+    OWNER ||--o{ TRANSACTIONS : "initiates"
+    INSTITUTION ||--o{ TRANSACTIONS : "processes_at"
+    ACCOUNTS ||--o{ TRANSACTIONS : "occurs_in"
+    TRANSACTION_TYPE ||--o{ TRANSACTIONS : "defines_type"
+    BUCKET ||--o{ TRANSACTIONS : "allocated_to"
+    CURRENCIES ||--o{ TRANSACTIONS : "denominated_in"
+    
+    CURRENCIES ||--o{ SECURITIES : "primary_currency"
+    SECURITIES ||--o{ SECURITY_PRICES : "price_history"
+    
+    TRANSACTIONS ||--o| TRADES : "trade_details"
+    TRANSACTIONS ||--o| INCOME : "income_details"
+    TRANSACTIONS ||--o| FEES : "fee_details"
+    TRANSACTIONS ||--o| TRANSFERS : "transfer_details"
+    
+    SECURITIES ||--o{ TRADES : "security_traded"
+    SECURITIES ||--o{ INCOME : "income_source"
+    
+    ACCOUNTS ||--o{ TRANSFERS : "transfer_from"
+    ACCOUNTS ||--o{ TRANSFERS : "transfer_to"
