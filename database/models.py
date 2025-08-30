@@ -1,10 +1,11 @@
 """
 SQLAlchemy models for Portfolio Manager
 """
-from sqlalchemy import Column, Integer, String, DateTime, Decimal, Date, Boolean, ForeignKey, BigInteger, Text
+from sqlalchemy import Column, Integer, String, DateTime, Date, Boolean, ForeignKey, BigInteger, Text, Numeric
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime
+from decimal import Decimal
 
 Base = declarative_base()
 
@@ -62,7 +63,7 @@ class Currency(Base):
     currency_id = Column(Integer, primary_key=True)
     currency_code = Column(String(10), nullable=False, unique=True)
     currency_name = Column(String(100), nullable=False)
-    conversion_to_gbp = Column(Decimal(10, 6), nullable=False, default=1.0)
+    conversion_to_gbp = Column(Numeric(10, 6), nullable=False, default=1.0)
     
     # Relationships
     securities = relationship("Security", back_populates="currency")
@@ -76,7 +77,7 @@ class Account(Base):
     institution_id = Column(Integer, ForeignKey('institutions.institution_id'), nullable=False)
     account_type_id = Column(Integer, ForeignKey('account_types.account_type_id'), nullable=False)
     account_number = Column(String(50))
-    account_name = Column(String(200), nullable=False)
+ #   account_name = Column(String(200), nullable=False)
     
     # Relationships
     owner = relationship("Owner", back_populates="accounts")
@@ -95,7 +96,7 @@ class Security(Base):
     asset_class = Column(String(50), nullable=False)
     currency_id = Column(Integer, ForeignKey('currencies.currency_id'), nullable=False)
     maturity_date = Column(Date)  # NULL for funds
-    coupon_rate = Column(Decimal(5, 3))  # Annual percentage for bonds
+    coupon_rate = Column(Numeric(5, 3))  # Annual percentage for bonds
     coupon_frequency = Column(Integer)  # Payments per year
     last_coupon_date = Column(Date)
     next_coupon_date = Column(Date)
@@ -112,10 +113,10 @@ class SecurityPrice(Base):
     price_id = Column(Integer, primary_key=True)
     security_id = Column(Integer, ForeignKey('securities.security_id'), nullable=False)
     price_date = Column(Date, nullable=False)
-    open_price = Column(Decimal(10, 4))
-    high_price = Column(Decimal(10, 4))
-    low_price = Column(Decimal(10, 4))
-    close_price = Column(Decimal(10, 4), nullable=False)
+    open_price = Column(Numeric(10, 4))
+    high_price = Column(Numeric(10, 4))
+    low_price = Column(Numeric(10, 4))
+    close_price = Column(Numeric(10, 4), nullable=False)
     volume = Column(BigInteger)
     last_updated = Column(DateTime, default=datetime.utcnow)
     
@@ -132,7 +133,7 @@ class Transaction(Base):
     account_id = Column(Integer, ForeignKey('accounts.account_id'), nullable=False)
     bucket_id = Column(Integer, ForeignKey('buckets.bucket_id'))
     currency_id = Column(Integer, ForeignKey('currencies.currency_id'), nullable=False)
-    exchange_rate = Column(Decimal(10, 6), nullable=False, default=1.0)
+    exchange_rate = Column(Numeric(10, 6), nullable=False, default=1.0)
     transaction_date = Column(DateTime, nullable=False)
     description = Column(Text)
     
@@ -156,9 +157,9 @@ class Trade(Base):
     trade_id = Column(Integer, primary_key=True)
     transaction_id = Column(Integer, ForeignKey('transactions.transaction_id'), nullable=False)
     security_id = Column(Integer, ForeignKey('securities.security_id'), nullable=False)
-    units = Column(Decimal(15, 6), nullable=False)
-    price = Column(Decimal(10, 4), nullable=False)
-    trading_fee = Column(Decimal(10, 2), default=0.0)
+    units = Column(Numeric(15, 6), nullable=False)
+    price = Column(Numeric(10, 4), nullable=False)
+    trading_fee = Column(Numeric(10, 2), default=0.0)
     is_buy = Column(Boolean, nullable=False)
     
     # Relationships
@@ -171,7 +172,7 @@ class Income(Base):
     income_id = Column(Integer, primary_key=True)
     transaction_id = Column(Integer, ForeignKey('transactions.transaction_id'), nullable=False)
     security_id = Column(Integer, ForeignKey('securities.security_id'))  # Nullable for cash interest
-    amount = Column(Decimal(10, 2), nullable=False)
+    amount = Column(Numeric(10, 2), nullable=False)
     
     # Relationships
     transaction = relationship("Transaction", back_populates="income")
@@ -182,7 +183,7 @@ class Fee(Base):
     
     fee_id = Column(Integer, primary_key=True)
     transaction_id = Column(Integer, ForeignKey('transactions.transaction_id'), nullable=False)
-    amount = Column(Decimal(10, 2), nullable=False)
+    amount = Column(Numeric(10, 2), nullable=False)
     
     # Relationships
     transaction = relationship("Transaction", back_populates="fee")
@@ -194,7 +195,7 @@ class Transfer(Base):
     transaction_id = Column(Integer, ForeignKey('transactions.transaction_id'), nullable=False)
     from_account_id = Column(Integer, ForeignKey('accounts.account_id'), nullable=False)
     to_account_id = Column(Integer, ForeignKey('accounts.account_id'), nullable=False)
-    amount = Column(Decimal(10, 2), nullable=False)
+    amount = Column(Numeric(10, 2), nullable=False)
     
     # Relationships
     transaction = relationship("Transaction", back_populates="transfer")

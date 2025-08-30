@@ -1,0 +1,217 @@
+erDiagram
+    %% === Lookup Tables ===
+    OWNER {
+        int OwnerId PK
+        varchar OwnerName
+    }
+
+    INSTITUTION {
+        int InstitutionId PK
+        varchar InstitutionName
+    }
+
+    ACCOUNT_TYPE {
+        int AccountTypeId PK
+        varchar TypeName
+        bool IsBankAccount
+    }
+
+    BUCKET {
+        int BucketId PK
+        varchar BucketName "Cash, Bonds, Growth"
+    }
+
+    CASH_CATEGORY {
+        int CashCategoryId PK
+        varchar CategoryName
+    }
+
+    CURRENCY {
+        int CurrencyId PK
+        varchar CurrencyCode
+    }
+
+    FX_RATES {
+        int FXRateId PK
+        int CurrencyId FK
+        date RateDate
+        decimal RateToGBP
+    }
+
+    SECURITY_TYPE {
+        int SecurityTypeId PK
+        varchar TypeName
+    }
+
+    TRANSACTION_TYPE {
+        int TransactionTypeId PK
+        varchar TypeName
+    }
+
+    %% === Core Entities ===
+    ACCOUNTS {
+        int AccountId PK
+        int OwnerId FK
+        int InstitutionId FK
+        int AccountTypeId FK
+        varchar AccountNumber "UNIQUE(AccountNumber, InstitutionId) where IsExternal = false"
+        bool IsExternal
+        int CurrencyId FK
+    }
+
+    SECURITIES {
+        int SecurityId PK
+        int SecurityTypeId FK
+        int BucketId FK
+        varchar Ticker
+        varchar SecurityName
+        int CurrencyId FK
+        "UNIQUE(Ticker, CurrencyId)"
+    }
+
+    %% Subtype Tables for Securities
+    CASH_SECURITIES {
+        int SecurityId PK, FK
+        int CashCategoryId FK
+    }
+
+    BOND_SECURITIES {
+        int SecurityId PK, FK
+        date MaturityDate
+        decimal CouponRate
+        date LastCouponDate
+        date NextCouponDate
+    }
+
+    FUND_SECURITIES {
+        int SecurityId PK, FK
+        varchar Sector
+        varchar Region
+    }
+
+    %% Holdings
+    ACCOUNT_SECURITIES {
+        int AccountSecurityId PK
+        int AccountId FK
+        int SecurityId FK
+        decimal Units "CHECK(Units >= 0)"
+        date LastUpdated
+    }
+
+    %% Current cash allocation snapshot
+    ACCOUNT_CASH_ALLOCATIONS {
+        int AllocationId PK
+        int AccountId FK
+        int CashCategoryId FK
+        decimal Amount "CHECK(Amount >= 0)"
+        date AllocationDate
+    }
+
+    %% === Transactions Master Table ===
+    TRANSACTIONS {
+        int TransactionId PK
+        int TransactionTypeId FK
+        int OwnerId FK
+        int CurrencyId FK
+        decimal ExchangeRate "CHECK(ExchangeRate > 0)"
+        date TransactionDate
+        varchar Description
+    }
+
+    %% Transaction Detail Tables
+    TRADE_DETAILS {
+        int TransactionId PK, FK
+        int AccountId FK
+        int SecurityId FK
+        decimal Units
+        decimal Price
+        decimal Fee
+        bool IsBuy
+    }
+
+    TRANSFER_DETAILS {
+        int TransactionId PK, FK
+        int FromAccountId FK
+        int ToAccountId FK
+        decimal Amount
+    }
+
+    INCOME_DETAILS {
+        int TransactionId PK, FK
+        int AccountId FK
+        int SecurityId FK
+        decimal Amount
+        varchar IncomeType
+    }
+
+    FEE_DETAILS {
+        int TransactionId PK, FK
+        int AccountId FK
+        decimal Amount
+        varchar FeeType
+    }
+
+    CASH_ALLOCATION_ENTRIES {
+        int TransactionId FK
+        int AccountId FK
+        int CashCategoryId FK
+        decimal Amount
+    }
+
+    %% Historical prices
+    SECURITY_PRICES {
+        int PriceId PK
+        int SecurityId FK
+        date PriceDate
+        decimal ClosePrice
+        decimal Volume "CHECK(Volume >= 0)"
+        date LastUpdated
+    }
+
+    %% === Relationships ===
+    OWNER ||--o{ ACCOUNTS : has
+    INSTITUTION ||--o{ ACCOUNTS : provides
+    ACCOUNT_TYPE ||--o{ ACCOUNTS : categorizes
+    BUCKET ||--o{ SECURITIES : assigns
+    SECURITY_TYPE ||--o{ SECURITIES : classifies
+    CURRENCY ||--o{ ACCOUNTS : uses
+    CURRENCY ||--o{ SECURITIES : denominated_in
+    CURRENCY ||--o{ TRANSACTIONS : uses
+    CURRENCY ||--o{ FX_RATES : rates
+    
+    ACCOUNTS ||--o{ ACCOUNT_SECURITIES : holds
+    SECURITIES ||--o{ ACCOUNT_SECURITIES : held_in
+    
+    CASH_CATEGORY ||--o{ ACCOUNT_CASH_ALLOCATIONS : categorizes
+    ACCOUNTS ||--o{ ACCOUNT_CASH_ALLOCATIONS : allocates
+    
+    TRANSACTION_TYPE ||--o{ TRANSACTIONS : classifies
+    OWNER ||--o{ TRANSACTIONS : initiates
+    
+    TRANSACTIONS ||--o{ CASH_ALLOCATION_ENTRIES : updates
+    
+    ACCOUNTS ||--o{ TRADE_DETAILS : executes
+    SECURITIES ||--o{ TRADE_DETAILS : trades
+    
+    ACCOUNTS ||--o{ TRANSFER_DETAILS : from_account
+    ACCOUNTS ||--o{ TRANSFER_DETAILS : to_account
+    
+    ACCOUNTS ||--o{ INCOME_DETAILS : receives
+    SECURITIES ||--o{ INCOME_DETAILS : generates
+    
+    ACCOUNTS ||--o{ FEE_DETAILS : charged
+    
+    CASH_CATEGORY ||--o{ CASH_ALLOCATION_ENTRIES : categorizes_cash
+    ACCOUNTS ||--o{ CASH_ALLOCATION_ENTRIES : allocates_cash
+    
+    SECURITIES ||--o| CASH_SECURITIES : cash_details
+    SECURITIES ||--o| BOND_SECURITIES : bond_details
+    SECURITIES ||--o| FUND_SECURITIES : fund_details
+    
+    SECURITIES ||--o{ SECURITY_PRICES : priced
+    
+    CASH_CATEGORY ||--o{ CASH_SECURITIES : categorizes
+    TRANSACTIONS ||--o| TRADE_DETAILS : has_trade
+    TRANSACTIONS ||--o| TRANSFER_DETAILS : has_transfer
+    TRANSACTIONS ||--o| INCOME_DETAILS : has_income
+    TRANSACTIONS ||--o| FEE_DETAILS : has_fee
