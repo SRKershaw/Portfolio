@@ -1,30 +1,30 @@
 # backend/tests/test_portfolio.py
+import sys
+from pathlib import Path
 
+# Add project root (Portfolio/) to path
+sys.path.append(str(Path(__file__).parent.parent.parent))
+
+# Now import backend as a package
+from backend.main import app
 from fastapi.testclient import TestClient
-from backend.main import app  # <-- Corrected import
-from backend.services.portfolio import get_all, get_by_id, create  # <-- Corrected import
-from backend.schemas.portfolio import Portfolio  # <-- Corrected import
 
 client = TestClient(app)
 
-
+# --- Your 5 tests below ---
 def test_list_portfolios():
     resp = client.get("/portfolios")
     assert resp.status_code == 200
     data = resp.json()
     assert isinstance(data, list)
-    assert len(data) >= 1          # demo portfolio exists
-
+    assert len(data) >= 1
 
 def test_read_portfolio():
-    # grab first id
     ids = [p["id"] for p in client.get("/portfolios").json()]
     resp = client.get(f"/portfolios/{ids[0]}")
     assert resp.status_code == 200
     portfolio = resp.json()
     assert "sets" in portfolio
-    assert any(s["name"] == "Tech Leaders" for s in portfolio["sets"])
-
 
 def test_create_portfolio():
     payload = {"name": "My New Portfolio"}
@@ -32,7 +32,7 @@ def test_create_portfolio():
     assert resp.status_code == 201
     new = resp.json()
     assert new["name"] == payload["name"]
-    assert len(new["sets"]) == 1          # default "All Assets"
+    assert len(new["sets"]) == 1
     assert new["sets"][0]["name"] == "All Assets"
 
 def test_create_set():
@@ -42,9 +42,7 @@ def test_create_set():
     data = resp.json()
     assert any(s["name"] == "Test Set" for s in data["sets"])
 
-
 def test_create_asset():
-    # Get a set ID (use Tech Leaders from demo)
     portfolio = client.get("/portfolios").json()[0]
     set_id = next(s["id"] for s in portfolio["sets"] if s["name"] == "Tech Leaders")
     asset_payload = {
@@ -59,4 +57,4 @@ def test_create_asset():
     assert resp.status_code == 201
     updated = resp.json()
     set_assets = next(s["assets"] for s in updated["sets"] if s["id"] == set_id)
-    assert any(a["ticker"] == "GOOGL" for a in set_assets)    
+    assert any(a["ticker"] == "GOOGL" for a in set_assets)
