@@ -1,19 +1,26 @@
-# main.py - FastAPI app entry point with basic endpoint and CORS for frontend integration
-
+# backend/main.py
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware  # Enables CORS to allow frontend requests from different origins
+from fastapi.middleware.cors import CORSMiddleware
+from routers import portfolio_router as portfolio
 
-app = FastAPI()  # Initialize the FastAPI application instance
-
-# Add CORS middleware for security and dev convenience (extensible: update origins for production)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Allow requests from Vite dev server
-    allow_credentials=True,  # Support cookies if needed later (e.g., sessions)
-    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allow all headers (e.g., Authorization for JWT)
+app = FastAPI(
+    title="Portfolio API",
+    version="0.1.0"
 )
 
-@app.get("/")  # Define a GET endpoint at the root path
-def read_root():
-    return {"message": "Hello from backend!"}  # Return a simple JSON response; this will be fetched by frontend
+# CORS – keep allowing the Vite dev server
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Mount routers
+app.include_router(portfolio)
+
+# (Optional) root just for health check
+@app.get("/")
+def root():
+    return {"message": "Portfolio API is alive"}
