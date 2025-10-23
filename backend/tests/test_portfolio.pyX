@@ -1,8 +1,9 @@
 # backend/tests/test_portfolio.py
+
 from fastapi.testclient import TestClient
-from main import app
-from services.portfolio import get_all, get_by_id, create
-from schemas.portfolio import Portfolio
+from backend.main import app  # <-- Corrected import
+from backend.services.portfolio import get_all, get_by_id, create  # <-- Corrected import
+from backend.schemas.portfolio import Portfolio  # <-- Corrected import
 
 client = TestClient(app)
 
