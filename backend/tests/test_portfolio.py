@@ -1,51 +1,47 @@
 # backend/tests/test_portfolio.py
-import sys
-from pathlib import Path
-
-# Add project root (Portfolio/) to path
-sys.path.append(str(Path(__file__).parent.parent.parent))
-
-# Now import backend as a package
 from backend.main import app
 from fastapi.testclient import TestClient
 
 client = TestClient(app)
 
-# --- Your 5 tests below ---
 def test_list_portfolios():
     resp = client.get("/portfolios")
     assert resp.status_code == 200
-    data = resp.json()
-    assert isinstance(data, list)
-    assert len(data) >= 1
+    assert len(resp.json()) >= 1
 
 def test_read_portfolio():
-    ids = [p["id"] for p in client.get("/portfolios").json()]
-    resp = client.get(f"/portfolios/{ids[0]}")
+    portfolio_id = client.get("/portfolios").json()[0]["id"]
+    resp = client.get(f"/portfolios/{portfolio_id}")
     assert resp.status_code == 200
-    portfolio = resp.json()
-    assert "sets" in portfolio
+    assert "sets" in resp.json()
 
 def test_create_portfolio():
-    payload = {"name": "My New Portfolio"}
-    resp = client.post("/portfolios", json=payload)
+    resp = client.post("/portfolios", json={"name": "Test"})
     assert resp.status_code == 201
-    new = resp.json()
-    assert new["name"] == payload["name"]
-    assert len(new["sets"]) == 1
-    assert new["sets"][0]["name"] == "All Assets"
+    data = resp.json()
+    assert data["name"] == "Test"
+    assert len(data["sets"]) == 1
+    assert data["sets"][0]["name"] == "All Assets"
 
 def test_create_set():
     portfolio_id = client.get("/portfolios").json()[0]["id"]
-    resp = client.post(f"/portfolios/{portfolio_id}/sets", json={"name": "Test Set"})
+    resp = client.post(f"/portfolios/{portfolio_id}/sets", json={"name": "New Set"})
     assert resp.status_code == 201
-    data = resp.json()
-    assert any(s["name"] == "Test Set" for s in data["sets"])
+    assert any(s["name"] == "New Set" for s in resp.json()["sets"])
 
 def test_create_asset():
-    portfolio = client.get("/portfolios").json()[0]
-    set_id = next(s["id"] for s in portfolio["sets"] if s["name"] == "Tech Leaders")
-    asset_payload = {
+    portfolios = client.get("/portfolios").json()
+    set_id = None
+    for p in portfolios:
+        for s in p["sets"]:
+            if s["name"] == "Tech Leaders":
+                set_id = s["id"]
+                break
+        if set_id:
+            break
+    if not set_id:
+        raise ValueError("Tech Leaders not found in any portfolio")
+    payload = {
         "ticker": "GOOGL",
         "shares": 3,
         "purchase_date": "2025-04-01",
@@ -53,8 +49,8 @@ def test_create_asset():
         "currency": "USD",
         "fees": 2.0
     }
-    resp = client.post(f"/sets/{set_id}/assets", json=asset_payload)
+    resp = client.post(f"/sets/{set_id}/assets", json=payload)
     assert resp.status_code == 201
     updated = resp.json()
-    set_assets = next(s["assets"] for s in updated["sets"] if s["id"] == set_id)
-    assert any(a["ticker"] == "GOOGL" for a in set_assets)
+    assets = next(s["assets"] for s in updated["sets"] if s["id"] == set_id)
+    assert any(a["ticker"] == "GOOGL" for a in assets)
