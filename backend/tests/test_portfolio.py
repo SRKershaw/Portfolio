@@ -7,40 +7,37 @@ client = TestClient(app)
 def test_list_portfolios():
     resp = client.get("/portfolios")
     assert resp.status_code == 200
-    assert len(resp.json()) >= 1
+    data = resp.json()
+    assert isinstance(data, list)
+    assert len(data) >= 1
 
 def test_read_portfolio():
-    portfolio_id = client.get("/portfolios").json()[0]["id"]
-    resp = client.get(f"/portfolios/{portfolio_id}")
+    ids = [p["id"] for p in client.get("/portfolios").json()]
+    resp = client.get(f"/portfolios/{ids[0]}")
     assert resp.status_code == 200
     assert "sets" in resp.json()
 
 def test_create_portfolio():
-    resp = client.post("/portfolios", json={"name": "Test"})
+    payload = {"name": "My New Portfolio"}
+    resp = client.post("/portfolios", json=payload)
     assert resp.status_code == 201
-    data = resp.json()
-    assert data["name"] == "Test"
-    assert len(data["sets"]) == 1
-    assert data["sets"][0]["name"] == "All Assets"
+    new = resp.json()
+    assert new["name"] == payload["name"]
+    assert len(new["sets"]) == 1
+    assert new["sets"][0]["name"] == "All Assets"
 
 def test_create_set():
     portfolio_id = client.get("/portfolios").json()[0]["id"]
-    resp = client.post(f"/portfolios/{portfolio_id}/sets", json={"name": "New Set"})
+    resp = client.post(f"/portfolios/{portfolio_id}/sets", json={"name": "Test Set"})
     assert resp.status_code == 201
-    assert any(s["name"] == "New Set" for s in resp.json()["sets"])
+    data = resp.json()
+    assert any(s["name"] == "Test Set" for s in data["sets"])
 
 def test_create_asset():
-    portfolios = client.get("/portfolios").json()
-    set_id = None
-    for p in portfolios:
-        for s in p["sets"]:
-            if s["name"] == "Tech Leaders":
-                set_id = s["id"]
-                break
-        if set_id:
-            break
+    portfolio = client.get("/portfolios").json()[0]
+    set_id = next((s["id"] for s in portfolio["sets"] if s["name"] == "Tech Leaders"), None)
     if not set_id:
-        raise ValueError("Tech Leaders not found in any portfolio")
+        raise ValueError("Tech Leaders not found")
     payload = {
         "ticker": "GOOGL",
         "shares": 3,
@@ -49,7 +46,7 @@ def test_create_asset():
         "currency": "USD",
         "fees": 2.0
     }
-    resp = client.post(f"/sets/{set_id}/assets", json=payload)
+    resp = client.post(f"/portfolios/sets/{set_id}/assets", json=payload)
     assert resp.status_code == 201
     updated = resp.json()
     assets = next(s["assets"] for s in updated["sets"] if s["id"] == set_id)

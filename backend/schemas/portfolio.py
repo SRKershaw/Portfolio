@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 from datetime import date
 import uuid
@@ -15,7 +15,7 @@ class Asset(BaseModel):
     currency: str
     fees: Optional[float] = 0.0
 
-    @validator("ticker")
+    @field_validator("ticker")
     def upper(cls, v):
         return v.upper()
 
@@ -47,6 +47,6 @@ class AssetCreate(BaseModel):
     currency: str
     fees: Optional[float] = 0.0
 
-    @validator("ticker")
+    @field_validator("ticker")
     def upper(cls, v):
         return v.upper()
