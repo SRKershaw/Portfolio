@@ -1,18 +1,24 @@
-// vite.config.js - Enhanced config for dev server and Vitest integration
+// vite.config.js - Enhanced config with proxy to backend
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],  // React support
+  plugins: [react()],
   server: {
-    port: 3000,  // Consistent port (avoids conflicts)
-    open: true,  // Auto-open browser on npm run dev
+    port: 3000,
+    open: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8000',  // FastAPI backend
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),  // /api/portfolios → /portfolios
+      },
+    },
   },
   test: {
-    globals: true,  // Use global test funcs (describe, it) without imports
-    environment: 'jsdom',  // Browser simulation for DOM tests
-    setupFiles: './src/setupTests.js',  // Load test helpers (create this file next)
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/setupTests.js',
   },
 });

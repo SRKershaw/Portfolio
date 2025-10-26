@@ -1,12 +1,21 @@
-// src/components/SetDropZone.jsx - Dnd target for sets (move assets)
-
-import { Droppable } from 'react-beautiful-dnd';
+// src/components/SetDropZone.jsx
+import { Droppable } from '@hello-pangea/dnd';
 
 function SetDropZone({ setId, children }) {
   return (
     <Droppable droppableId={setId}>
       {(provided) => (
-        <div ref={provided.innerRef} {...provided.droppableProps}>
+        <div
+          ref={provided.innerRef}
+          {...provided.droppableProps}
+          style={{
+            padding: '8px',
+            minHeight: '100px',
+            backgroundColor: '#f9f9f9',
+            border: '1px dashed #ccc',
+            borderRadius: '4px',
+          }}
+        >
           {children}
           {provided.placeholder}
         </div>
