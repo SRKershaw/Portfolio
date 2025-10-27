@@ -1,4 +1,6 @@
-// src/components/SetDropZone.jsx
+// frontend/src/components/SetDropZone.jsx
+// ########################################################################################
+
 import { Droppable } from '@hello-pangea/dnd';
 
 function SetDropZone({ setId, children }) {

@@ -1,4 +1,6 @@
-// src/App.jsx - Main app with clean layout, wide table, and full comments
+// frontend/src/App.jsx - Main app with clean layout, wide table, and full comments
+// ########################################################################################
+
 // PURPOSE: Display portfolio selector, Add button, and wide asset table
 // EDITING: Change maxWidth, colors, or spacing in sx props
 

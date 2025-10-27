@@ -1,4 +1,5 @@
-// src/components/AllocationChart.jsx - Highcharts pie with NaN guard
+// frontend/src/components/AllocationChart.jsx - Highcharts pie with NaN guard
+// ########################################################################################
 
 import { useEffect, useRef } from 'react';
 import Highcharts from 'highcharts';

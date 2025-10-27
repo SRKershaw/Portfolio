@@ -1,4 +1,5 @@
-// src/components/PortfolioSelector.jsx - Dropdown to fetch and select portfolios from backend
+// frontend/src/components/PortfolioSelector.jsx - Dropdown to fetch and select portfolios from backend
+// ########################################################################################
 
 import { useState, useEffect } from 'react';
 import { useApi } from '../hooks/useApi';

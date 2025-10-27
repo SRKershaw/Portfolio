@@ -1,4 +1,6 @@
-// src/components/AssetTable.jsx - Wide, editable table with small text
+// frontend/src/components/AssetTable.jsx - Wide, editable table with small text
+// ########################################################################################
+
 // PURPOSE: Display assets, allow inline edit, wide by default
 // EDITING: Change column sizes, font size, or minWidth
 

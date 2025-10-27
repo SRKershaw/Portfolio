@@ -1,4 +1,5 @@
 // src/App.test.jsx - Test that frontend fetches and displays backend message
+// ########################################################################################
 
 import { render, screen, waitFor } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';

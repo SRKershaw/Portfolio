@@ -1,0 +1,217 @@
+###################################### 
+# PORTFOLIO PROJECT CONTEXT FILE # 
+###################################### 
+ 
+--- USING GIT-TRACKED FILES ONLY --- 
+ 
+--- REPOSITORY STRUCTURE --- 
+.git
+.pytest_cache
+.vscode
+backend
+frontend
+venv
+ 
+--- INCLUDED FILES (tracked by Git) --- 
+.gitignore 
+backend/main.py 
+backend/requirements.txt 
+backend/routers/__init__.py 
+backend/routers/portfolio.py 
+backend/schemas/portfolio.py 
+backend/services/portfolio.py 
+backend/tests/__init__.py 
+backend/tests/test_portfolio.py 
+frontend/.gitignore 
+frontend/README.md 
+frontend/eslint.config.js 
+frontend/index.html 
+frontend/package-lock.json 
+frontend/package.json 
+frontend/public/vite.svg 
+frontend/src/App.css 
+frontend/src/App.jsx 
+frontend/src/App.test.jsx 
+frontend/src/assets/react.svg 
+frontend/src/components/AddAssetForm.jsx 
+frontend/src/components/AllocationChart.jsx 
+frontend/src/components/AssetTable.jsx 
+frontend/src/components/Dashboard.jsx 
+frontend/src/components/PortfolioSelector.jsx 
+frontend/src/components/SetDropZone.jsx 
+frontend/src/hooks/useApi.js 
+frontend/src/index.css 
+frontend/src/main.jsx 
+frontend/src/setupTests.js 
+frontend/vite.config.js 
+ 
+====================================== 
+=== FILE: .gitignore === 
+====================================== 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Misc
+.DS_Store
+Thumbs.db 
+====================================== 
+=== FILE: backend/main.py === 
+====================================== 
+ 
+====================================== 
+=== FILE: backend/requirements.txt === 
+====================================== 
+ 
+====================================== 
+=== FILE: backend/routers/__init__.py === 
+====================================== 
+ 
+====================================== 
+=== FILE: backend/routers/portfolio.py === 
+====================================== 
+ 
+====================================== 
+=== FILE: backend/schemas/portfolio.py === 
+====================================== 
+ 
+====================================== 
+=== FILE: backend/services/portfolio.py === 
+====================================== 
+ 
+====================================== 
+=== FILE: backend/tests/__init__.py === 
+====================================== 
+ 
+====================================== 
+=== FILE: backend/tests/test_portfolio.py === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/.gitignore === 
+====================================== 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Misc
+.DS_Store
+Thumbs.db 
+====================================== 
+=== FILE: frontend/README.md === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/eslint.config.js === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/index.html === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/package-lock.json === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/package.json === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/public/vite.svg === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/src/App.css === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/src/App.jsx === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/src/App.test.jsx === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/src/assets/react.svg === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/src/components/AddAssetForm.jsx === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/src/components/AllocationChart.jsx === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/src/components/AssetTable.jsx === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/src/components/Dashboard.jsx === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/src/components/PortfolioSelector.jsx === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/src/components/SetDropZone.jsx === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/src/hooks/useApi.js === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/src/index.css === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/src/main.jsx === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/src/setupTests.js === 
+====================================== 
+ 
+====================================== 
+=== FILE: frontend/vite.config.js === 
+====================================== 
+ 

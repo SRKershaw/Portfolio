@@ -1,3 +1,6 @@
+// frontend/src/main.jsx - Entry point rendering App component
+// ########################################################################################
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'

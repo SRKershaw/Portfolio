@@ -1,5 +1,5 @@
-// vite.config.js - Enhanced config with proxy to backend
-
+// frontend/vite.config.js - Enhanced config with proxy to backend
+// ########################################################################################
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 

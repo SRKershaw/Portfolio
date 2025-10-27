@@ -1,5 +1,5 @@
-// src/components/AddAssetForm.jsx - MUI form for adding asset
-
+// frontend/src/components/AddAssetForm.jsx - MUI form for adding asset
+// ########################################################################################
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';

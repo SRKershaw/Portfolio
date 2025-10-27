@@ -1,4 +1,5 @@
-// src/components/Dashboard.jsx - Fixed layout with data-grid
+// frontend/src/components/Dashboard.jsx - Fixed layout with data-grid
+// ########################################################################################
 
 import { useState, useEffect } from 'react';
 import RGL, { WidthProvider } from 'react-grid-layout';
